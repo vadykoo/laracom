@@ -40,7 +40,13 @@
     <div class="col-md-6">
         <div class="product-description">
             <h1>{{ $product->name }}
-                <small>{{ config('cart.currency') }} {{ $product->price }}</small>
+
+
+                <small>
+                    @if(!config('cart.currency_after_price')){{ config('cart.currency') }}@endif
+                        {{ $product->price }}
+                    @if(config('cart.currency_after_price')) {{ config('cart.currency') }}  @endif
+                </small>
             </h1>
             <div class="description">{!! $product->description !!}</div>
             <div class="excerpt">
@@ -53,7 +59,7 @@
                         {{ csrf_field() }}
                         @if(isset($productAttributes) && !$productAttributes->isEmpty())
                             <div class="form-group">
-                                <label for="productAttribute">Choose Combination</label> <br />
+                                <label for="productAttribute">{{__("Choose Combination")}}</label> <br />
                                 <select name="productAttribute" id="productAttribute" class="form-control select2">
                                     @foreach($productAttributes as $productAttribute)
                                         <option value="{{ $productAttribute->id }}">
@@ -61,7 +67,11 @@
                                                 {{ $value->attribute->name }} : {{ ucwords($value->value) }}
                                             @endforeach
                                             @if(!is_null($productAttribute->price))
-                                                ( {{ config('cart.currency_symbol') }} {{ $productAttribute->price }})
+                                                (
+                                                    @if(!config('cart.currency_after_price')){{ config('cart.currency_symbol') }}@endif
+                                                        {{ $productAttribute->price }}
+                                                    @if(config('cart.currency_after_price')) {{ config('cart.currency_symbol') }} @endif
+                                                )
                                             @endif
                                         </option>
                                     @endforeach
@@ -73,11 +83,11 @@
                                    class="form-control"
                                    name="quantity"
                                    id="quantity"
-                                   placeholder="Quantity"
+                                   placeholder="{{__("Quantity")}}"
                                    value="{{ old('quantity') }}" />
                             <input type="hidden" name="product" value="{{ $product->id }}" />
                         </div>
-                        <button type="submit" class="btn btn-warning"><i class="fa fa-cart-plus"></i> Add to cart
+                        <button type="submit" class="btn btn-warning"><i class="fa fa-cart-plus"></i> {{__('Add to cart')}}
                         </button>
                     </form>
                 </div>
